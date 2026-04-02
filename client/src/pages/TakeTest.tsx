@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './TakeTest.css';
 
 interface Option {
@@ -26,6 +27,7 @@ interface Test {
 export default function TakeTest() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, token } = useAuth();
   const [test, setTest] = useState<Test | null>(null);
   const [answers, setAnswers] = useState<Record<number, number[]>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -48,7 +50,7 @@ export default function TakeTest() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!test) return;
     let correct = 0;
     test.questions.forEach(q => {
@@ -61,6 +63,13 @@ export default function TakeTest() {
     });
     setScore(correct);
     setSubmitted(true);
+    if (user && token) {
+      await fetch(`/api/tests/${id}/results`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ score: correct, total: test.questions.length }),
+      });
+    }
   };
 
   const getOptionClass = (q: Question, opt: Option) => {

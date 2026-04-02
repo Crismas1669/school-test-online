@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './CreateTest.css';
 
 interface Option {
@@ -17,6 +18,7 @@ interface Question {
 
 export default function CreateTest() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState<Question[]>([
@@ -82,7 +84,7 @@ export default function CreateTest() {
         if (q.imageFile) {
           const fd = new FormData();
           fd.append('image', q.imageFile);
-          const r = await fetch('/api/upload', { method: 'POST', body: fd });
+          const r = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
           const data = await r.json();
           return { ...q, image_url: data.url, imageFile: undefined };
         }
@@ -91,7 +93,7 @@ export default function CreateTest() {
 
       const res = await fetch('/api/tests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ title, description, questions: questionsWithUrls }),
       });
       const data = await res.json();

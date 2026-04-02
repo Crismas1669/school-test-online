@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Home.css';
 
 interface Test {
@@ -12,6 +13,7 @@ interface Test {
 export default function Home() {
   const [tests, setTests] = useState<Test[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user, token } = useAuth();
 
   const fetchTests = () => {
     fetch('/api/tests')
@@ -24,7 +26,7 @@ export default function Home() {
 
   const deleteTest = async (id: number) => {
     if (!confirm('Удалить тест?')) return;
-    await fetch(`/api/tests/${id}`, { method: 'DELETE' });
+    await fetch(`/api/tests/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
     fetchTests();
   };
 
@@ -53,7 +55,9 @@ export default function Home() {
               </div>
               <div className="test-card-actions">
                 <Link to={`/test/${test.id}`} className="btn-primary">Пройти</Link>
-                <button onClick={() => deleteTest(test.id)} className="btn-danger">Удалить</button>
+                {user && (user.role === 'admin' || user.role === 'teacher') && (
+                  <button onClick={() => deleteTest(test.id)} className="btn-danger">Удалить</button>
+                )}
               </div>
             </div>
           ))}
