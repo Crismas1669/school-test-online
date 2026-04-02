@@ -6,5 +6,8 @@
     "start": "node server/dist/index.js",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
