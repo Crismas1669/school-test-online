@@ -58,6 +58,10 @@ export default function Register() {
               <option value="teacher">Учитель</option>
             </select>
           </div>
+          <div className="form-group">
+            <label>Код доступа (необязательно)</label>
+            <input value={adminCode} onChange={e => setAdminCode(e.target.value)} placeholder="Введите код если есть" />
+          </div>
           {error && <div className="error-msg">{error}</div>}
           <button type="submit" className="btn-primary btn-full" disabled={loading}>
             {loading ? 'Регистрация...' : 'Зарегистрироваться'}
