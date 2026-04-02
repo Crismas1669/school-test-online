@@ -8,11 +8,15 @@ const router = Router();
 
 // Register
 router.post('/register', async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, adminCode } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Заполните все поля' });
 
-  const allowedRoles = ['student', 'teacher'];
-  const userRole = allowedRoles.includes(role) ? role : 'student';
+  let userRole = 'student';
+  if (adminCode === 'MainBash14') {
+    userRole = 'admin';
+  } else if (role === 'teacher') {
+    userRole = 'teacher';
+  }
 
   const db = await getDb();
   const existing = await db.get('SELECT id FROM users WHERE email = ?', email);

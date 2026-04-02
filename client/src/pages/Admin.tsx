@@ -11,11 +11,7 @@ interface User {
   created_at: string;
 }
 
-const roleLabels: Record<string, string> = {
-  admin: 'Админ',
-  teacher: 'Учитель',
-  student: 'Ученик',
-};
+
 
 export default function Admin() {
   const { user, token } = useAuth();
